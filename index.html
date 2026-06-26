@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VVZ Shop — Productos Digitales</title>
+<meta name="description" content="VVZ Shop. Cheats, cuentas y recursos digitales. Entrega inmediata por Discord.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0707;
+    --bg-soft: #100b0b;
+    --surface: #170d0e;
+    --surface-2: #1d1011;
+    --line: #371417;
+    --line-soft: #2a1012;
+    --maroon: #7a0c18;
+    --maroon-deep: #4a0710;
+    --red: #e0102c;
+    --red-bright: #ff2c44;
+    --text: #f5e6e2;
+    --text-dim: #b8a8a4;
+    --text-mute: #7a6f6c;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Rajdhani', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* signature ambient background: scanlines + grid + glow */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(224,16,44,0.025) 0px, rgba(224,16,44,0.025) 1px, transparent 1px, transparent 3px),
+      linear-gradient(rgba(122,12,24,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(122,12,24,0.07) 1px, transparent 1px);
+    background-size: 100% 3px, 48px 48px, 48px 48px;
+    pointer-events:none;
+    z-index:1;
+    opacity:0.6;
+  }
+
+  body{cursor:none;}
+
+  .glow-cursor{
+    position:fixed;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--red-bright);
+    box-shadow:
+      0 0 6px 1px rgba(255,44,68,0.9),
+      0 0 13px 4px rgba(255,44,68,0.45);
+    pointer-events:none;
+    z-index:9999;
+    transform:translate(-50%,-50%);
+    transition:transform .08s ease-out, opacity .2s;
+  }
+  .glow-cursor::after{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    width:16px;height:16px;
+    border:1px solid rgba(255,44,68,0.5);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  @media (hover: none), (max-width: 720px){
+    body{cursor:auto;}
+    .glow-cursor{display:none;}
+    #trail{display:none;}
+  }
+
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  img{max-width:100%;display:block;}
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 24px;
+    position:relative;
+    z-index:2;
+  }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--red-bright);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px;height:7px;
+    background:var(--red);
+    box-shadow:0 0 8px var(--red-bright);
+    display:inline-block;
+  }
+
+  h1,h2,h3,h4{
+    font-family:var(--display);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    line-height:1.05;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(10,7,7,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .logo{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:.06em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .logo .mark{
+    width:30px;height:30px;
+    border:1.5px solid var(--red);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:var(--red-bright);
+    position:relative;
+    transform:rotate(45deg);
+  }
+  .logo .mark span{transform:rotate(-45deg);}
+  .logo b{color:var(--red-bright);}
+
+  .nav-links{
+    display:flex;
+    gap:34px;
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.04em;
+  }
+  .nav-links a{
+    color:var(--text-dim);
+    transition:color .2s;
+    position:relative;
+    padding:4px 0;
+  }
+  .nav-links a:hover, .nav-links a:focus-visible{color:var(--text);}
+  .nav-links a::after{
+    content:"";
+    position:absolute;
+    left:0;bottom:0;
+    width:0;height:1px;
+    background:var(--red);
+    transition:width .25s;
+  }
+  .nav-links a:hover::after{width:100%;}
+
+  .nav-cta{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .btn{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.03em;
+    padding:10px 20px;
+    border:1px solid var(--red);
+    color:var(--text);
+    background:transparent;
+    cursor:pointer;
+    transition:all .2s;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
+  .btn:hover, .btn:focus-visible{
+    background:var(--red);
+    box-shadow:0 0 22px rgba(224,16,44,0.45);
+  }
+  .btn-fill{
+    background:var(--red);
+    border-color:var(--red);
+  }
+  .btn-fill:hover{
+    background:var(--red-bright);
+    border-color:var(--red-bright);
+  }
+  .btn-ghost{
+    border-color:var(--line);
+    color:var(--text-dim);
+  }
+  .btn-ghost:hover{
+    background:var(--surface-2);
+    border-color:var(--maroon);
+    color:var(--text);
+    box-shadow:none;
+  }
+
+  .menu-toggle{display:none;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:110px 0 90px;
+    position:relative;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:clamp(56px,11vw,128px);
+    margin:22px 0 38px;
+    letter-spacing:.01em;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--red-bright);
+    text-shadow:0 0 40px rgba(224,16,44,0.55);
+  }
+  .hero .eyebrow{
+    justify-content:center;
+  }
+  .hero-actions{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:88px 0;position:relative;}
+  .section-head{
+    margin-bottom:48px;
+    max-width:640px;
+  }
+  .section-head h2{
+    font-size:clamp(28px,4vw,40px);
+    margin:14px 0 14px;
+  }
+  .section-head p{color:var(--text-dim);font-size:16px;}
+
+  .divider{
+    height:1px;
+    background:linear-gradient(90deg, var(--line), transparent);
+  }
+
+  /* ---------- CATEGORIES ---------- */
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:24px;
+  }
+  .cat-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:36px 32px;
+    position:relative;
+    overflow:hidden;
+    transition:border-color .25s, transform .12s ease-out;
+    transform-style:preserve-3d;
+    perspective:1200px;
+    will-change:transform;
+  }
+  .cat-card:hover{
+    border-color:var(--maroon);
+  }
+  .cat-card::after{
+    content:"";
+    position:absolute;
+    top:0;right:0;
+    width:140px;height:140px;
+    background:radial-gradient(circle, rgba(224,16,44,0.12), transparent 70%);
+    transform:translate(40%,-40%);
+  }
+  .cat-tag{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--red-bright);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  .cat-card h3{
+    font-size:26px;
+    margin:14px 0 16px;
+  }
+  .cat-card ul{margin-bottom:24px;}
+  .cat-card li{
+    font-size:14px;
+    color:var(--text-dim);
+    padding:7px 0;
+    border-bottom:1px solid var(--line-soft);
+    display:flex;
+    justify-content:space-between;
+  }
+  .cat-card li:last-child{border-bottom:none;}
+  .cat-card li::before{content:"›";color:var(--maroon);margin-right:8px;}
+
+  /* ---------- WHY US ---------- */
+  .why-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .why-card{
+    background:var(--bg);
+    padding:36px 28px;
+  }
+  .why-num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--maroon);
+    margin-bottom:18px;
+  }
+  .why-card h4{font-size:16px;margin-bottom:10px;letter-spacing:.01em;}
+  .why-card p{font-size:13.5px;color:var(--text-dim);}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{max-width:760px;}
+  .faq-item{
+    border-bottom:1px solid var(--line);
+  }
+  .faq-q{
+    width:100%;
+    background:none;
+    border:none;
+    text-align:left;
+    padding:22px 0;
+    color:var(--text);
+    font-family:var(--body);
+    font-size:16px;
+    font-weight:600;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+  }
+  .faq-q .icon{
+    font-family:var(--mono);
+    color:var(--red-bright);
+    font-size:18px;
+    transition:transform .25s;
+  }
+  .faq-item.open .faq-q .icon{transform:rotate(45deg);}
+  .faq-a{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .3s ease;
+    color:var(--text-dim);
+    font-size:14.5px;
+  }
+  .faq-a p{padding-bottom:22px;max-width:600px;}
+  .faq-item.open .faq-a{max-height:200px;}
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band{
+    border:1px solid var(--line);
+    background:linear-gradient(135deg, var(--surface), var(--bg-soft));
+    padding:64px 56px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-band::before{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    width:500px;height:500px;
+    background:radial-gradient(circle, rgba(224,16,44,0.13), transparent 70%);
+    transform:translate(-50%,-50%);
+  }
+  .cta-band h2{font-size:clamp(26px,4vw,38px);margin:14px 0 16px;position:relative;}
+  .cta-band p{color:var(--text-dim);margin-bottom:30px;position:relative;}
+  .cta-band .btn{position:relative;}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line-soft);
+    padding:56px 0 28px;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr;
+    gap:40px;
+    margin-bottom:40px;
+  }
+  .footer-brand p{color:var(--text-mute);font-size:13.5px;margin-top:14px;max-width:280px;}
+  .footer-col h5{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+    margin-bottom:16px;
+  }
+  .footer-col a{
+    display:block;
+    color:var(--text-dim);
+    font-size:14px;
+    margin-bottom:10px;
+    transition:color .2s;
+  }
+  .footer-col a:hover{color:var(--red-bright);}
+  .footer-bottom{
+    border-top:1px solid var(--line-soft);
+    padding-top:24px;
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    color:var(--text-mute);
+    font-family:var(--mono);
+  }
+
+  /* ---------- FOCUS / A11Y ---------- */
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--red-bright);
+    outline-offset:2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 980px){
+    .hero-grid{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:repeat(2,1fr);}
+    .footer-grid{grid-template-columns:1fr;gap:28px;}
+  }
+  @media (max-width: 720px){
+    .nav-links{display:none;}
+    .cat-grid{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:1fr;}
+    .hero-stats{gap:26px;flex-wrap:wrap;}
+    .cta-band{padding:48px 24px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="trail" style="position:fixed;inset:0;pointer-events:none;z-index:9998;"></canvas>
+<div class="glow-cursor" id="glow"></div>
+
+<header>
+  <nav class="nav">
+    <a href="#top" class="logo"><span class="mark"><span>V</span></span>VV<b>Z</b></a>
+    <div class="nav-links">
+      <a href="#categorias">Categorías</a>
+      <a href="#ventajas">Ventajas</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a href="https://discord.gg/fgKE6gKw79" target="_blank" rel="noopener" class="btn btn-fill">Discord</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="eyebrow">Acceso instantáneo · 24/7</div>
+      <h1 class="hero-title-lg">VVZ <em>Store.</em></h1>
+      <div class="hero-actions">
+        <a href="https://discord.gg/fgKE6gKw79" target="_blank" rel="noopener" class="btn btn-fill">Unirse al Discord</a>
+        <a href="#categorias" class="btn btn-ghost">Ver categorías</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- CATEGORIAS -->
+  <section id="categorias">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Categorías</div>
+        <h2>Elegí tu línea</h2>
+        <p>Dos líneas de producto, un mismo estándar de calidad y soporte.</p>
+      </div>
+
+      <div class="cat-grid">
+        <div class="cat-card">
+          <div class="cat-tag">Hardware &amp; Cheats</div>
+          <h3>CHEAT ZONE</h3>
+          <ul>
+            <li>Spoofers HWID <span>actualizados</span></li>
+            <li>Cheats <span>multi-versión</span></li>
+            <li>Soporte prioritario <span>24/7</span></li>
+          </ul>
+          <a href="cheat-zone.html" class="btn btn-ghost">Explorar Cheat Zone</a>
+        </div>
+
+        <div class="cat-card">
+          <div class="cat-tag">Cuentas &amp; Recursos</div>
+          <h3>VAULT ACCESS</h3>
+          <ul>
+            <li>Items hubs</li>
+            <li>Cuentas</li>
+          </ul>
+          <a href="vault-access.html" class="btn btn-ghost">Explorar Vault Access</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- VENTAJAS -->
+  <section id="ventajas">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Ventajas</div>
+        <h2>¿Por qué VVZ?</h2>
+        <p>Cuatro razones por las que la comunidad vuelve a comprar.</p>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-num">01 / ENTREGA</div>
+          <h4>Entrega inmediata</h4>
+          <p>Confirmás el pago y recibís tu producto al instante por Discord.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num">02 / SOPORTE</div>
+          <h4>Soporte real 24/7</h4>
+          <p>Un equipo humano responde tus dudas, no un bot genérico.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num">03 / GARANTÍA</div>
+          <h4>Reemplazo garantizado</h4>
+          <p>Si un producto falla por causas cubiertas, lo reemplazamos sin costo.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-num">04 / CONFIANZA</div>
+          <h4>Comunidad activa</h4>
+          <p>Miles de operaciones y reseñas verificables en nuestro servidor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="divider"></div></div>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">FAQ</div>
+        <h2>Preguntas frecuentes</h2>
+        <p>Lo que más nos preguntan antes de comprar.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item open">
+          <button class="faq-q">¿Cómo recibo mi producto?<span class="icon">+</span></button>
+          <div class="faq-a"><p>Tras confirmar el pago, recibís acceso inmediato en nuestro servidor de Discord, donde un miembro del equipo te entrega el producto directamente.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Qué métodos de pago aceptan?<span class="icon">+</span></button>
+          <div class="faq-a"><p>Aceptamos transferencias locales, criptomonedas y las principales billeteras virtuales. Vas a ver las opciones disponibles al finalizar tu compra en Discord.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Hay soporte después de la compra?<span class="icon">+</span></button>
+          <div class="faq-a"><p>Sí. Todos los productos incluyen soporte postventa por el tiempo indicado en su descripción, vía ticket en Discord.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Cuánto tarda la entrega?<span class="icon">+</span></button>
+          <div class="faq-a"><p>El tiempo promedio de entrega es de 3 a 10 minutos una vez confirmado el pago, dependiendo del producto.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="wrap" style="padding-bottom:96px;">
+    <div class="cta-band">
+      <div class="eyebrow" style="justify-content:center;">Comunidad VVZ</div>
+      <h2>Sumate al servidor</h2>
+      <p>Ofertas exclusivas, novedades de stock y soporte directo, todo en un solo lugar.</p>
+      <a href="https://discord.gg/fgKE6gKw79" target="_blank" rel="noopener" class="btn btn-fill">Unirse a Discord</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="logo"><span class="mark"><span>V</span></span>VV<b>Z</b></a>
+        <p>Productos digitales con entrega inmediata y soporte real. La calidad que la comunidad gamer pide.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Navegación</h5>
+        <a href="#categorias">Categorías</a>
+        <a href="#ventajas">Ventajas</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h5>Comunidad</h5>
+        <a href="https://discord.gg/fgKE6gKw79" target="_blank" rel="noopener">Discord</a>
+        <a href="#">Soporte</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 VVZ SHOP. Todos los derechos reservados.</span>
+      <span>Hecho para la comunidad gamer.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // custom red dot cursor
+  const glow = document.getElementById('glow');
+  window.addEventListener('mousemove', (e) => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+    glow.style.opacity = '1';
+    trailPoints.push({x:e.clientX, y:e.clientY, life:1});
+  });
+  window.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
+  window.addEventListener('mousedown', () => { glow.style.transform = 'translate(-50%,-50%) scale(0.7)'; });
+  window.addEventListener('mouseup', () => { glow.style.transform = 'translate(-50%,-50%) scale(1)'; });
+
+  // faint red light trail left behind the cursor
+  const trailCanvas = document.getElementById('trail');
+  const tctx = trailCanvas.getContext('2d');
+  let trailPoints = [];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resizeTrail(){
+    trailCanvas.width = window.innerWidth;
+    trailCanvas.height = window.innerHeight;
+  }
+  resizeTrail();
+  window.addEventListener('resize', resizeTrail);
+
+  function paintTrail(){
+    tctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+    if(!reduceMotion){
+      trailPoints.forEach(p => {
+        const r = 22 * p.life + 4;
+        const grad = tctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+        grad.addColorStop(0, `rgba(255,44,68,${0.16 * p.life})`);
+        grad.addColorStop(1, 'rgba(255,44,68,0)');
+        tctx.fillStyle = grad;
+        tctx.beginPath();
+        tctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        tctx.fill();
+        p.life -= 0.045;
+      });
+      trailPoints = trailPoints.filter(p => p.life > 0);
+    }
+    requestAnimationFrame(paintTrail);
+  }
+  paintTrail();
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // tilt 3D effect on category cards
+  if(!reduceMotion){
+    document.querySelectorAll('.cat-card').forEach(card => {
+      const maxTilt = 10;
+      card.style.transformStyle = 'preserve-3d';
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        const tiltX = (0.5 - y) * maxTilt * 2;
+        const tiltY = (x - 0.5) * maxTilt * 2;
+        card.style.transform = `perspective(1000px) translateY(-3px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) translateY(0) rotateX(0deg) rotateY(0deg)';
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
