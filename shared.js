@@ -164,3 +164,32 @@ if (filterBtns.length) {
     });
   });
 }
+
+// scroll reveal: fade + slide up as elements enter the viewport
+const revealEls = document.querySelectorAll('.reveal');
+if (revealEls.length) {
+  if (reduceMotion) {
+    revealEls.forEach(el => el.classList.add('visible'));
+  } else {
+    const groups = new Map();
+    revealEls.forEach(el => {
+      const parent = el.parentElement;
+      if (!groups.has(parent)) groups.set(parent, []);
+      groups.get(parent).push(el);
+    });
+    groups.forEach(siblings => {
+      siblings.forEach((el, i) => {
+        el.style.transitionDelay = (i * 90) + 'ms';
+      });
+    });
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+  }
+}
