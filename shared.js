@@ -165,7 +165,8 @@ if (filterBtns.length) {
   });
 }
 
-// scroll reveal: fade + slide up as elements enter the viewport
+// reveal: fade + slide up, replaying every time the element enters or
+// leaves the viewport, in either scroll direction
 const revealEls = document.querySelectorAll('.reveal');
 if (revealEls.length) {
   if (reduceMotion) {
@@ -182,14 +183,25 @@ if (revealEls.length) {
         el.style.transitionDelay = (i * 90) + 'ms';
       });
     });
+
+    const pendingTimers = new WeakMap();
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        const el = entry.target;
+        const existing = pendingTimers.get(el);
+        if (existing) clearTimeout(existing);
+
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
+          // real delay so the fade/slide reads as an entrance,
+          // not an instant snap, even above the fold on first load
+          const t = setTimeout(() => el.classList.add('visible'), 250);
+          pendingTimers.set(el, t);
+        } else {
+          el.classList.remove('visible');
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+
     revealEls.forEach(el => revealObserver.observe(el));
   }
 }

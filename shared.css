@@ -441,6 +441,17 @@ a:focus-visible, button:focus-visible{
   *{animation:none !important; transition:none !important;}
 }
 
+/* ---------- SCROLL REVEAL ---------- */
+.reveal{
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 980px){
   .footer-grid{grid-template-columns:1fr;gap:28px;}
