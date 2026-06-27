@@ -5,6 +5,81 @@ const tctx = trailCanvas ? trailCanvas.getContext('2d') : null;
 let trailPoints = [];
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// minimal constellation particle background
+const bgCanvas = document.getElementById('bg-particles');
+if (bgCanvas) {
+  const bctx = bgCanvas.getContext('2d');
+  let particles = [];
+  const DENSITY = 9000; // px² per particle — keeps it sparse/minimal
+  const LINK_DIST = 140;
+  const SPEED = 0.12;
+
+  function sizeBg(){
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+  }
+  function makeParticles(){
+    const count = Math.max(20, Math.round((bgCanvas.width * bgCanvas.height) / DENSITY));
+    particles = Array.from({length: count}, () => ({
+      x: Math.random() * bgCanvas.width,
+      y: Math.random() * bgCanvas.height,
+      vx: (Math.random() - 0.5) * SPEED,
+      vy: (Math.random() - 0.5) * SPEED,
+      r: Math.random() * 1.4 + 1
+    }));
+  }
+
+  function startParticles(){
+    sizeBg();
+    makeParticles();
+    drawBg();
+  }
+
+  window.addEventListener('resize', () => { sizeBg(); makeParticles(); });
+
+  function drawBg(){
+    bctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    if (!reduceMotion) {
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = bgCanvas.width; if (p.x > bgCanvas.width) p.x = 0;
+        if (p.y < 0) p.y = bgCanvas.height; if (p.y > bgCanvas.height) p.y = 0;
+      });
+    }
+    for (let i = 0; i < particles.length; i++){
+      const a = particles[i];
+      for (let j = i + 1; j < particles.length; j++){
+        const b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < LINK_DIST){
+          bctx.strokeStyle = `rgba(224,16,44,${0.18 * (1 - dist / LINK_DIST)})`;
+          bctx.lineWidth = 1;
+          bctx.beginPath();
+          bctx.moveTo(a.x, a.y);
+          bctx.lineTo(b.x, b.y);
+          bctx.stroke();
+        }
+      }
+    }
+    particles.forEach(p => {
+      bctx.fillStyle = 'rgba(245,230,226,0.55)';
+      bctx.beginPath();
+      bctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      bctx.fill();
+    });
+    requestAnimationFrame(drawBg);
+  }
+
+  if (bgCanvas.width === 0 || document.readyState === 'complete') {
+    startParticles();
+  } else {
+    window.addEventListener('load', startParticles);
+  }
+  // fallback in case 'load' already fired before listener attached
+  setTimeout(() => { if (particles.length === 0) startParticles(); }, 50);
+}
+
 if (glow) {
   window.addEventListener('mousemove', (e) => {
     glow.style.left = e.clientX + 'px';

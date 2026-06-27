@@ -41,19 +41,12 @@
     position:relative;
   }
 
-  /* signature ambient background: scanlines + grid + glow */
-  body::before{
-    content:"";
+  /* signature ambient background: constellation particles canvas (#bg-particles) */
+  #bg-particles{
     position:fixed;
     inset:0;
-    background-image:
-      repeating-linear-gradient(0deg, rgba(224,16,44,0.025) 0px, rgba(224,16,44,0.025) 1px, transparent 1px, transparent 3px),
-      linear-gradient(rgba(122,12,24,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(122,12,24,0.07) 1px, transparent 1px);
-    background-size: 100% 3px, 48px 48px, 48px 48px;
+    z-index:0;
     pointer-events:none;
-    z-index:1;
-    opacity:0.6;
   }
 
   body{cursor:none;}
@@ -474,6 +467,7 @@
 </head>
 <body>
 
+<canvas id="bg-particles"></canvas>
 <canvas id="trail" style="position:fixed;inset:0;pointer-events:none;z-index:9998;"></canvas>
 <div class="glow-cursor" id="glow"></div>
 
@@ -637,6 +631,71 @@
 </footer>
 
 <script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // minimal constellation particle background
+  const bgCanvas = document.getElementById('bg-particles');
+  if (bgCanvas) {
+    const bctx = bgCanvas.getContext('2d');
+    let particles = [];
+    const DENSITY = 9000;
+    const LINK_DIST = 140;
+    const SPEED = 0.12;
+
+    function sizeBg(){
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+    }
+    function makeParticles(){
+      const count = Math.max(20, Math.round((bgCanvas.width * bgCanvas.height) / DENSITY));
+      particles = Array.from({length: count}, () => ({
+        x: Math.random() * bgCanvas.width,
+        y: Math.random() * bgCanvas.height,
+        vx: (Math.random() - 0.5) * SPEED,
+        vy: (Math.random() - 0.5) * SPEED,
+        r: Math.random() * 1.4 + 1
+      }));
+    }
+    sizeBg();
+    makeParticles();
+    window.addEventListener('resize', () => { sizeBg(); makeParticles(); });
+
+    function drawBg(){
+      bctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      if (!reduceMotion) {
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = bgCanvas.width; if (p.x > bgCanvas.width) p.x = 0;
+          if (p.y < 0) p.y = bgCanvas.height; if (p.y > bgCanvas.height) p.y = 0;
+        });
+      }
+      for (let i = 0; i < particles.length; i++){
+        const a = particles[i];
+        for (let j = i + 1; j < particles.length; j++){
+          const b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < LINK_DIST){
+            bctx.strokeStyle = `rgba(224,16,44,${0.18 * (1 - dist / LINK_DIST)})`;
+            bctx.lineWidth = 1;
+            bctx.beginPath();
+            bctx.moveTo(a.x, a.y);
+            bctx.lineTo(b.x, b.y);
+            bctx.stroke();
+          }
+        }
+      }
+      particles.forEach(p => {
+        bctx.fillStyle = 'rgba(245,230,226,0.55)';
+        bctx.beginPath();
+        bctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        bctx.fill();
+      });
+      requestAnimationFrame(drawBg);
+    }
+    drawBg();
+  }
+
   // custom red dot cursor
   const glow = document.getElementById('glow');
   window.addEventListener('mousemove', (e) => {
@@ -653,7 +712,6 @@
   const trailCanvas = document.getElementById('trail');
   const tctx = trailCanvas.getContext('2d');
   let trailPoints = [];
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function resizeTrail(){
     trailCanvas.width = window.innerWidth;
